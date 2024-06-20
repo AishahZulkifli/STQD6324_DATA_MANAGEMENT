@@ -94,7 +94,7 @@ The steps followed in this project are:
 ### Top 5 Rows of the Dataset
 The following table shows the first five rows of the Iris dataset:
 
-![Head Data](/Images/Top_5_head_data.png)
+![Head Data](/Assignment_3/output/Top_5_head_data.png)
 
 The data set is about iris flowers and it has four features namely sepal length, sepal width, petal length, petal width and one target variable which is the species of the flower. The first five rows all refer to the species Iris-setosa. These measurements will be used in the identification of the flowers to their various species using the machine learning algorithms.
 
@@ -178,7 +178,7 @@ spark.stop()
 ```
 
 ## Results & Discussions
-![Model Evaluation](/Images/results.png)
+![Model Evaluation](/Assignment_3/output/results.png)
 
 The model achieved the following metrics:
 - Test Accuracy: 0.9583
@@ -228,7 +228,7 @@ plt.savefig("feature_importance.png")
 plt.show()
 ```
 ### Pairplot of Iris Dataset
-![Pairplot](/Images/pairplot.png)
+![Pairplot](/Assignment_3/output/pairplot.png)
 
 Species Distribution:
    - Iris-setosa (blue): Distinct clusters, especially in petal length and width.
@@ -241,7 +241,7 @@ Feature Relationships:
 Density Plots: Petal length and petal width show the most distinct distributions.
 
 ### Feature Importance  
-![Feature Importance](/Images/feature_importance.png)
+![Feature Importance](/Assignment_3/output/feature_importance.png)
 
 Petal length: The most important feature with the highest importance score, playing a significant role in distinguishing species.
 
