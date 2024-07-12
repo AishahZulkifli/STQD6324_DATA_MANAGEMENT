@@ -15,7 +15,7 @@ This assignment contains the solutions for the Data Management assignment 4. The
 ## Questions and Solutions
 
 ### Q1 - Spark
-Identify the top ten movies with the highest average ratings.
+Calculate the average rating for each movie.
 
 ```python
 # average_ratings_spark.py
@@ -90,6 +90,29 @@ if __name__ == "__main__":
 
 ### Q3 - Cassandra
 Find the users who have rated at least 50 movies and identify their favourite movie genres.
+
+To answer this question, I used Apache Spark to process the data and Apache Cassandra to store the results. The process involves loading user ratings and movie genres data, processing it to find users who have rated at least 50 movies, and determining their favorite movie genres.
+**Steps:**
+
+1. **Data Loading:**
+   - User ratings data is loaded from the file `u.data`.
+   - Movie genres data is loaded from the file `u.item`.
+
+2. **Data Processing:**
+   - Parse the user ratings and movie genres data to create DataFrames.
+   - Write the parsed data into Cassandra tables `user_ratings` and `movie_genres`.
+
+3. **User Ratings Count:**
+   - Count the number of ratings each user has given.
+   - Filter out users who have rated less than 50 movies.
+
+4. **Favorite Genres:**
+   - Join the user ratings data with the movie genres data to associate ratings with genres.
+   - Group by user ID and genre, then count the number of ratings for each genre.
+   - Join this result with the filtered user ratings count to get the users who have rated at least 50 movies and their favorite genres.
+
+5. **Storing Results:**
+   - Write the results into a Cassandra table `user_favourite_genres`.
 
 ```python
 from pyspark.sql import SparkSession
@@ -178,6 +201,7 @@ if __name__ == "__main__":
     # Stop the Spark session
     spark.stop()
 ```
+The results show the users who have rated at least 50 movies and their favorite genres. 
 ![Q3 Output](output/Q3_cassandra.png)
 ![Q3 Output](output/Q3_cassandra(1).png)
 ![Q3 Output](output/Q3_cassandra(2).png)
