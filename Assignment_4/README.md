@@ -91,7 +91,7 @@ if __name__ == "__main__":
 ### Q3 - Cassandra
 Find the users who have rated at least 50 movies and identify their favourite movie genres.
 
-To answer this question, I used Apache Spark to process the data and Apache Cassandra to store the results. The process involves loading user ratings and movie genres data, processing it to find users who have rated at least 50 movies, and determining their favorite movie genres.
+To answer this question, Apache Spark were used to process the data and Apache Cassandra to store the results. The process involves loading user ratings and movie genres data, processing it to find users who have rated at least 50 movies, and determining their favorite movie genres.
 **Steps:**
 
 1. **Data Loading:**
@@ -209,6 +209,10 @@ The results show the users who have rated at least 50 movies and their favorite 
 ### Q4 - MongoDB
 Find all users who are younger than 20 years old using MongoDB.
 
+To solve this question, the user data were loaded into MongoDB and then used a Spark application to filter and retrieve the required data. Below is the process and the results obtained.
+
+1. Load data into MongoDB:
+
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
@@ -248,24 +252,35 @@ if __name__ == "__main__":
     # Stop the session
     spark.stop()
 ```
+The output shows all the users with age less than 20 years old. This data is retrieved from the MongoDB collection users using a Spark SQL query.
+
 ![Q4 Output](output/Q4_MongoDB.png)
 
 ### Q5 - HBase
-Find all users who have the occupation "scientist" and their age is between 30 and 40 years old.
+Find all the users who have the occupation “scientist” and their age is between 30 and 40 years old.
 
-```python
+To solve this question, we first loaded the user data into HBase. Then, we used the HBase shell to filter the users based on the specified conditions. Below is the process and the results obtained.
+
+1. **Load data into HBase:**
+   - Create a new Pig script named `Q5.pig` to load data into HBase
+   - Run the pig script
+```
 users = LOAD '/user/maria_dev/aishah/u.user' USING PigStorage('|')
-    AS (userID:int, age:int, gender:chararray, occupation:chararray, zip:int);
+AS (userID:int, age:int, gender:chararray, occupation:chararray, zip:int);
 
 STORE users INTO 'hbase://users'
-    USING org.apache.pig.backend.hadoop.hbase.HBaseStorage(
-    'userinfo:age, userinfo:gender, userinfo:occupation, userinfo:zip');
-```
-#### In HBase shell
+USING org.apache.pig.backend.hadoop.hbase.HBaseStorage (
+'userinfo:age,userinfo:gender,userinfo:occupation,userinfo:zip');
 
+```
+2. **Use HBase shell to filter the data:**
+   - get into the `hbase shell`
+   - Execute the following HBase shell command to filter users
 ```
 scan 'users', { FILTER => "SingleColumnValueFilter('userinfo', 'occupation', =, 'binary:scientist') AND SingleColumnValueFilter('userinfo', 'age', >=, 'binary:30') AND SingleColumnValueFilter('userinfo', 'age', <=, 'binary:40')" }
 ```
+The output shows all the users who have the occupation "scientist" and their age is between 30 and 40 years old. This data is retrieved from the HBase table users using the HBase shell with the appropriate filters.
+
 ![Q5 Output](output/Q5_HBase.png)
 ![Q5 Output](output/Q5_HBase(2).png)
 
