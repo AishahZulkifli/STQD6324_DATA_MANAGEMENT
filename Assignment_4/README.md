@@ -43,9 +43,7 @@ avg_ratings.write.csv(output_path, header=True)
 
 # Stop the Spark session
 spark.stop()
-
-![Q1 Output](Assignment_4/output/Q1_spark.png)
 ```
-
+![Q1 Output](output/Q1_spark.png)
 
 
