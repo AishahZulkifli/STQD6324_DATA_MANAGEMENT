@@ -93,21 +93,28 @@ Find the users who have rated at least 50 movies and identify their favourite mo
 
 ```python
 from pyspark.sql import SparkSession
+from pyspark.sql import Row
 from pyspark.sql import functions as F
-from pyspark.sql.window import Window
 
-def parse_user(line):
-    fields = line.split('|')
-    return (int(fields[0]), fields[1], fields[2], fields[3], fields[4])
-
-def parse_rating(line):
+def parse_user_ratings(line):
     fields = line.split('\t')
-    return (int(fields[0]), int(fields[1]), float(fields[2]))
+    return Row(user_id=int(fields[0]), movie_id=int(fields[1]), rating=float(fields[2]))
 
-def parse_item(line):
+genre_list = [
+    "unknown", "Action", "Adventure", "Animation", "Children's", "Comedy",
+    "Crime", "Documentary", "Drama", "Fantasy", "Film-Noir", "Horror",
+    "Musical", "Mystery", "Romance", "Sci-Fi", "Thriller", "War", "Western"
+]
+
+def parse_movie_genres(line):
     fields = line.split('|')
-    genres = [fields[i] for i in range(5, len(fields)) if int(fields[i]) == 1]
-    return (int(fields[0]), genres)
+    movie_id = int(fields[0])
+    genres = fields[5:]  # Assuming the first 5 fields are movie details and the rest are genres
+    genre_rows = []
+    for i in range(len(genres)):
+        if genres[i] == '1':
+            genre_rows.append(Row(movie_id=movie_id, genre=genre_list[i]))
+    return genre_rows
 
 if __name__ == "__main__":
     spark = SparkSession.builder \
@@ -115,68 +122,66 @@ if __name__ == "__main__":
         .config("spark.cassandra.connection.host", "127.0.0.1") \
         .getOrCreate()
 
-    # Load the u.user file
-    user_lines = spark.sparkContext.textFile("hdfs:///user/maria_dev/aishah/u.user")
-    users = user_lines.map(parse_user).toDF(["user_id", "age", "gender", "occupation", "zip"])
+    # Load user ratings data
+    ratings_path = "hdfs:///user/maria_dev/aishah/u.data"
+    ratings_lines = spark.sparkContext.textFile(ratings_path)
+    user_ratings = ratings_lines.map(parse_user_ratings)
+    user_ratings_df = spark.createDataFrame(user_ratings)
 
-    # Load the u.data file
-    rating_lines = spark.sparkContext.textFile("hdfs:///user/maria_dev/aishah/u.data")
-    ratings = rating_lines.map(parse_rating).toDF(["user_id", "movie_id", "rating"])
+    # Load movie genres data
+    genres_path = "hdfs:///user/maria_dev/aishah/u.item"
+    genres_lines = spark.sparkContext.textFile(genres_path)
+    movie_genres = genres_lines.flatMap(parse_movie_genres)
+    movie_genres_df = spark.createDataFrame(movie_genres)
 
-    # Load the u.item file
-    item_lines = spark.sparkContext.textFile("hdfs:///user/maria_dev/aishah/u.item")
-    items = item_lines.map(parse_item).toDF(["movie_id", "genres"])
-
-    # Write user ratings to Cassandra
-    ratings.write \
+    # Write user ratings data to Cassandra
+    user_ratings_df.write \
         .format("org.apache.spark.sql.cassandra") \
         .mode('append') \
         .options(table="user_ratings", keyspace="movielens") \
         .save()
 
-    # Explode the genres and write to Cassandra
-    items = items.withColumn("genre", F.explode(F.col("genres")))
-    items.select("movie_id", "genre").write \
+    # Write movie genres data to Cassandra
+    movie_genres_df.write \
         .format("org.apache.spark.sql.cassandra") \
         .mode('append') \
         .options(table="movie_genres", keyspace="movielens") \
         .save()
 
-    # Load data back from Cassandra for processing
-    user_ratings = spark.read \
+    # Find users who have rated at least 50 movies
+    user_ratings_count = user_ratings_df.groupBy("user_id").count().filter("count >= 50")
+
+    # Join user ratings with movie genres to find favourite genres
+    user_favourite_genres = user_ratings_df.join(movie_genres_df, "movie_id") \
+        .groupBy("user_id", "genre") \
+        .agg(F.count("genre").alias("genre_count")) \
+        .join(user_ratings_count, "user_id") \
+        .orderBy("user_id", "genre_count", ascending=False)
+
+    # Show the result
+    user_favourite_genres.show()
+
+    # Select only relevant columns for saving
+    user_favourite_genres_selected = user_favourite_genres.select("user_id", "genre", "genre_count")
+
+    # Save the result to Cassandra
+    user_favourite_genres_selected.write \
         .format("org.apache.spark.sql.cassandra") \
-        .options(table="user_ratings", keyspace="movielens") \
-        .load()
+        .mode('append') \
+        .options(table="user_favourite_genres", keyspace="movielens") \
+        .save()
 
-    movie_genres = spark.read \
-        .format("org.apache.spark.sql.cassandra") \
-        .options(table="movie_genres", keyspace="movielens") \
-        .load()
+    # Save the result to CSV
+    output_path = "/user/maria_dev/aishah/user_favourite_genres.csv"
+    user_favourite_genres_selected.coalesce(1).write.csv(output_path, header=True)
 
-    # Count the number of ratings per user
-    user_ratings_count = user_ratings.groupBy("user_id").count().filter("count >= 50")
-
-    # Join the user data with the user ratings count
-    active_users = user_ratings_count.join(users, "user_id")
-
-    # Join the ratings with the movie genres
-    ratings_with_genres = user_ratings.join(movie_genres, "movie_id")
-
-    # Filter to include only active users
-    active_ratings_with_genres = ratings_with_genres.join(active_users, "user_id")
-
-    # Calculate the average rating per genre per user
-    user_genre_ratings = active_ratings_with_genres.groupBy("user_id", "genre").agg(F.avg("rating").alias("avg_rating"))
-
-    # Identify the favorite genre for each user
-    window_spec = Window.partitionBy("user_id").orderBy(F.desc("avg_rating"))
-    favorite_genres = user_genre_ratings.withColumn("rank", F.rank().over(window_spec)).filter("rank == 1").select("user_id", "genre")
-
-    # Show the results
-    favorite_genres.show()
-
+    # Stop the Spark session
     spark.stop()
 ```
+![Q3 Output](output/Q3_cassandra.png)
+![Q3 Output](output/Q3_cassandra(1).png)
+![Q3 Output](output/Q3_cassandra(2).png)
+
 ### Q4 - MongoDB
 Find all users who are younger than 20 years old using MongoDB.
 
@@ -241,7 +246,6 @@ scan 'users', { FILTER => "SingleColumnValueFilter('userinfo', 'occupation', =, 
 ![Q5 Output](output/Q5_HBase(2).png)
 
 ## Conclusion
-This repository demonstrates how to perform various data management tasks using different big data technologies such as Spark, Cassandra, MongoDB, and HBase. Each question in the assignment is solved using the appropriate technology and the results are provided.
-
+This assignment demonstrates how to perform various data management tasks using different big data technologies such as Spark, Cassandra, MongoDB, and HBase. Each question in the assignment is solved using the appropriate technology and the results are provided.
 
 
