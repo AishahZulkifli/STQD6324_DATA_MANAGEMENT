@@ -240,7 +240,8 @@ scan 'users', { FILTER => "SingleColumnValueFilter('userinfo', 'occupation', =, 
 ![Q5 Output](output/Q5_HBase.png)
 ![Q5 Output](output/Q5_HBase(2).png)
 
-
+## Conclusion
+This repository demonstrates how to perform various data management tasks using different big data technologies such as Spark, Cassandra, MongoDB, and HBase. Each question in the assignment is solved using the appropriate technology and the results are provided.
 
 
 
