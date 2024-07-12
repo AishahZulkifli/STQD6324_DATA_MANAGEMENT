@@ -238,7 +238,7 @@ STORE users INTO 'hbase://users'
 scan 'users', { FILTER => "SingleColumnValueFilter('userinfo', 'occupation', =, 'binary:scientist') AND SingleColumnValueFilter('userinfo', 'age', >=, 'binary:30') AND SingleColumnValueFilter('userinfo', 'age', <=, 'binary:40')" }
 ```
 ![Q5 Output](output/Q5_HBase.png)
-![Q6 Output](output/Q5_HBase(2).png)
+![Q5 Output](output/Q5_HBase(2).png)
 
 
 
