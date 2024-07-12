@@ -1,0 +1,72 @@
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.1.2.2.6.5.0-292, r897822d4dd5956ca186974c10382e9094683fa29, Fri May 11 08:00:59 UTC 2018
+
+scan 'users', {FILTER => "SingleColumnValueFilter('userinfo', 'occupation', =, 'binary:scientist') AND SingleColumnValueFilter('userinfo', 'age', >=, 'binary:30') AND SingleColumnValueFilter('userinfo', 'age', <=, 'binary:40')"}
+ROW  COLUMN+CELL
+ 107 column=userinfo:age, timestamp=1720695607205, value=39
+ 107 column=userinfo:gender, timestamp=1720695607205, value=M
+ 107 column=userinfo:occupation, timestamp=1720695607205, value=scientist
+ 107 column=userinfo:zip, timestamp=1720695607205, value=60466
+ 183 column=userinfo:age, timestamp=1720695607212, value=33
+ 183 column=userinfo:gender, timestamp=1720695607212, value=M
+ 183 column=userinfo:occupation, timestamp=1720695607212, value=scientist
+ 183 column=userinfo:zip, timestamp=1720695607212, value=27708
+ 272 column=userinfo:age, timestamp=1720695607219, value=33
+ 272 column=userinfo:gender, timestamp=1720695607219, value=M
+ 272 column=userinfo:occupation, timestamp=1720695607219, value=scientist
+ 272 column=userinfo:zip, timestamp=1720695607219, value=53706
+ 309 column=userinfo:age, timestamp=1720695607221, value=40
+ 309 column=userinfo:gender, timestamp=1720695607221, value=M
+ 309 column=userinfo:occupation, timestamp=1720695607221, value=scientist
+ 309 column=userinfo:zip, timestamp=1720695607221, value=70802
+ 337 column=userinfo:age, timestamp=1720695607222, value=37
+ 337 column=userinfo:gender, timestamp=1720695607222, value=M
+ 337 column=userinfo:occupation, timestamp=1720695607222, value=scientist
+ 337 column=userinfo:zip, timestamp=1720695607222, value=10522
+ 40 column=userinfo:age, timestamp=1720695607190, value=38
+ 40 column=userinfo:gender, timestamp=1720695607190, value=M
+ 40 column=userinfo:occupation, timestamp=1720695607190, value=scientist
+ 40 column=userinfo:zip, timestamp=1720695607190, value=27514
+ 430 column=userinfo:age, timestamp=1720695607225, value=38
+ 430 column=userinfo:gender, timestamp=1720695607225, value=M
+ 430 column=userinfo:occupation, timestamp=1720695607225, value=scientist
+ 430 column=userinfo:zip, timestamp=1720695607225, value=98199
+ 538 column=userinfo:age, timestamp=1720695607229, value=31
+ 538 column=userinfo:gender, timestamp=1720695607229, value=M
+ 538 column=userinfo:occupation, timestamp=1720695607229, value=scientist
+ 538 column=userinfo:zip, timestamp=1720695607229, value=21010
+ 543 column=userinfo:age, timestamp=1720695607229, value=33
+ 543 column=userinfo:gender, timestamp=1720695607229, value=M
+ 543 column=userinfo:occupation, timestamp=1720695607229, value=scientist
+ 543 column=userinfo:zip, timestamp=1720695607229, value=95123
+ 554 column=userinfo:age, timestamp=1720695607230, value=32
+ 554 column=userinfo:gender, timestamp=1720695607230, value=M
+ 554 column=userinfo:occupation, timestamp=1720695607230, value=scientist
+ 554 column=userinfo:zip, timestamp=1720695607230, value=62901
+ 643 column=userinfo:age, timestamp=1720695607233, value=39
+ 643 column=userinfo:gender, timestamp=1720695607233, value=M
+ 643 column=userinfo:occupation, timestamp=1720695607233, value=scientist
+ 643 column=userinfo:zip, timestamp=1720695607233, value=55122
+ 71 column=userinfo:age, timestamp=1720695607195, value=39
+ 71 column=userinfo:gender, timestamp=1720695607195, value=M
+ 71 column=userinfo:occupation, timestamp=1720695607195, value=scientist
+ 71 column=userinfo:zip, timestamp=1720695607195, value=98034
+ 730 column=userinfo:age, timestamp=1720695607235, value=31
+ 730 column=userinfo:gender, timestamp=1720695607235, value=F
+ 730 column=userinfo:occupation, timestamp=1720695607235, value=scientist
+ 730 column=userinfo:zip, timestamp=1720695607235, value=32114
+ 74 column=userinfo:age, timestamp=1720695607202, value=39
+ 74 column=userinfo:gender, timestamp=1720695607202, value=M
+ 74 column=userinfo:occupation, timestamp=1720695607202, value=scientist
+ 74 column=userinfo:zip, timestamp=1720695607202, value=
+ 874 column=userinfo:age, timestamp=1720695607241, value=36
+ 874 column=userinfo:gender, timestamp=1720695607241, value=M
+ 874 column=userinfo:occupation, timestamp=1720695607241, value=scientist
+ 874 column=userinfo:zip, timestamp=1720695607241, value=37076
+ 918 column=userinfo:age, timestamp=1720695607244, value=40
+ 918 column=userinfo:gender, timestamp=1720695607244, value=M
+ 918 column=userinfo:occupation, timestamp=1720695607244, value=scientist
+ 918 column=userinfo:zip, timestamp=1720695607244, value=70116
+16 row(s) in 0.2390 seconds
+
