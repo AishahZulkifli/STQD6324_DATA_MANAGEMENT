@@ -46,4 +46,45 @@ spark.stop()
 ```
 ![Q1 Output](output/Q1_spark.png)
 
+### Q2 - Cassandra
+Identify the top ten movies with the highest average ratings using Cassandra.
+
+```python
+from pyspark.sql import SparkSession
+
+if __name__ == "__main__":
+    spark = SparkSession.builder \
+        .appName("CassandraIntegration") \
+        .config("spark.cassandra.connection.host", "127.0.0.1") \
+        .getOrCreate()
+
+    # Read the CSV file from HDFS
+    avgRatings = spark.read.csv("hdfs:///user/maria_dev/aishah/avg_ratings.csv", header=True, inferSchema=True)
+
+    # Rename the columns to match Cassandra table schema
+    avgRatings = avgRatings.withColumnRenamed("movie_id", "movie_id").withColumnRenamed("avg(rating)", "avg_rating")
+
+    # Write the DataFrame to Cassandra
+    avgRatings.write \
+        .format("org.apache.spark.sql.cassandra") \
+        .mode('append') \
+        .options(table="avg_ratings", keyspace="movielens") \
+        .save()
+
+    # Read the data back from Cassandra to verify
+    readAvgRatings = spark.read \
+        .format("org.apache.spark.sql.cassandra") \
+        .options(table="avg_ratings", keyspace="movielens") \
+        .load()
+
+    # Create a temporary view to run SQL queries
+    readAvgRatings.createOrReplaceTempView("avg_ratings")
+
+    # Query to find the top 10 movies with the highest average ratings
+    topMoviesDF = spark.sql("SELECT movie_id, avg_rating FROM avg_ratings ORDER BY avg_rating DESC LIMIT 10")
+    topMoviesDF.show()
+
+    spark.stop()
+```
+![Q2 Output](output/Q2_cassandra.png)
 
