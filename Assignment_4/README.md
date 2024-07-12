@@ -288,4 +288,9 @@ The output shows all the users who have the occupation "scientist" and their age
 ## Conclusion
 This assignment demonstrates how to perform various data management tasks using different big data technologies such as Spark, Cassandra, MongoDB, and HBase. Each question in the assignment is solved using the appropriate technology and the results are provided.
 
+## Contact Information
+For any questions or clarifications, please contact:
+
+- Name: Aishah Zulkifli
+- Email: aishahzulkifli20@gmail.com
 
