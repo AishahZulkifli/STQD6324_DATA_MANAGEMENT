@@ -232,13 +232,13 @@ STORE users INTO 'hbase://users'
     USING org.apache.pig.backend.hadoop.hbase.HBaseStorage(
     'userinfo:age, userinfo:gender, userinfo:occupation, userinfo:zip');
 ```
-# In HBase shell
+#### In HBase shell
 
 ```
 scan 'users', { FILTER => "SingleColumnValueFilter('userinfo', 'occupation', =, 'binary:scientist') AND SingleColumnValueFilter('userinfo', 'age', >=, 'binary:30') AND SingleColumnValueFilter('userinfo', 'age', <=, 'binary:40')" }
 ```
 ![Q5 Output](output/Q5_HBase.png)
-![Q5 Output](output/Q5_HBase(2).png)
+![Q6 Output](output/Q5_HBase(2).png)
 
 
 
